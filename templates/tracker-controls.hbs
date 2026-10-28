@@ -1,0 +1,13 @@
+<div class="mt-controls">
+  <button type="button" data-action="scan" {{#if scanDisabled}}disabled{{/if}}>SCAN</button>
+  {{#if isGM}}
+  <button type="button" data-action="lock" class="{{#if locked}}on{{/if}}">{{#if locked}}LOCKED{{else}}UNLOCKED{{/if}}</button>
+  <button type="button" data-action="continuous" class="{{#if continuous}}on{{/if}}">CONTINUOUS</button>
+  <fieldset class="mt-viewers">
+    <legend>Show to</legend>
+    {{#each users}}
+    <label><input type="checkbox" data-viewer="{{id}}" {{#if checked}}checked{{/if}}> {{name}}</label>
+    {{/each}}
+  </fieldset>
+  {{/if}}
+</div>

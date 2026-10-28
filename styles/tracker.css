@@ -1,0 +1,13 @@
+/* M314 look: amber and green on black. */
+.hope-motion-tracker { --mt-amber: #ffb000; --mt-green: #7dff8a; }
+.hope-motion-tracker .window-content { background: #050605; color: var(--mt-amber); padding: 0; font-family: monospace; }
+.hope-motion-tracker .mt-screen { position: relative; }
+.hope-motion-tracker canvas { display: block; width: 100%; height: auto; background: #000; }
+.hope-motion-tracker .mt-readout { position: absolute; left: 10px; bottom: 28px; font-size: 22px; color: var(--mt-green); text-shadow: 0 0 6px var(--mt-green); }
+.hope-motion-tracker .mt-status { position: absolute; left: 10px; bottom: 8px; font-size: 12px; letter-spacing: 2px; }
+.hope-motion-tracker .mt-controls { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; }
+.hope-motion-tracker .mt-controls button { flex: 1; width: auto; background: #111; color: var(--mt-amber); border: 1px solid var(--mt-amber); font-family: monospace; }
+.hope-motion-tracker .mt-controls button.on { background: var(--mt-amber); color: #000; }
+.hope-motion-tracker .mt-controls button:disabled { opacity: 0.35; }
+.hope-motion-tracker .mt-viewers { flex-basis: 100%; border: 1px solid #5a3d00; margin: 0; padding: 4px 8px; }
+.hope-motion-tracker .mt-viewers label { display: inline-flex; align-items: center; gap: 4px; margin-right: 10px; }

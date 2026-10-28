@@ -1,0 +1,30 @@
+name: Release
+
+# Publish a GitHub release (tag like v0.1.0) and this builds the zip and manifest Foundry installs from.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set version and download URL from the tag
+        run: |
+          jq --arg v "${GITHUB_REF_NAME#v}" \
+             --arg dl "https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/hope-motion-tracker.zip" \
+             '.version = $v | .download = $dl' module.json > module.tmp
+          mv module.tmp module.json
+
+      - name: Build zip
+        run: zip -r hope-motion-tracker.zip module.json scripts styles templates assets LICENSE README.md
+
+      - name: Attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" hope-motion-tracker.zip module.json --clobber
