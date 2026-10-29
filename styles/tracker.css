@@ -21,9 +21,10 @@
 .hope-motion-tracker .mt-power-result.fine { border-color: var(--mt-green); color: var(--mt-green); }
 .hope-motion-tracker .mt-power-result.low, .hope-motion-tracker .mt-power-result.dead { border-color: #ff5a4a; color: #ff5a4a; }
 
-/* Dice explainer on Alien RPG roll cards */
-.mt-explain { margin-top: 6px; font-size: 12px; border: 1px solid #5a3d00; padding: 2px 6px; }
-.mt-explain summary { cursor: pointer; font-weight: bold; }
-.mt-explain.fine summary { color: #2e8b3a; }
-.mt-explain.bad summary, .mt-explain.warn summary { color: #b3261e; }
-.mt-explain ul { margin: 4px 0; padding-left: 16px; }
+/* Dice explainer on Alien RPG roll cards (the cards are dark, so use bright text) */
+.mt-explain { margin-top: 8px; font-size: 14px; line-height: 1.4; border: 1px solid #ffb000; padding: 4px 8px; color: #f2f2f2; }
+.mt-explain summary { cursor: pointer; font-size: 15px; font-weight: 700; color: #ffb000; text-shadow: 0 0 4px rgba(0, 0, 0, 0.8); }
+.mt-explain.fine summary { color: #7dff8a; }
+.mt-explain.bad summary, .mt-explain.warn summary { color: #ff8a7a; }
+.mt-explain ul { margin: 6px 0 2px; padding-left: 18px; font-weight: 500; }
+.mt-explain li { margin-bottom: 3px; }
