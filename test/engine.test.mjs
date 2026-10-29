@@ -106,3 +106,25 @@ test("jitter stays within plus or minus 1", () => {
   assert.equal(jitter(10, () => 0.5), 10);
   assert.equal(jitter(10, () => 0.999), 11);
 });
+
+import {explainPower, explainCard} from "../scripts/explain.js";
+
+test("explainPower: no ones holds, ones drain, zero kills", () => {
+  assert.deepEqual([explainPower({before: 5, ones: 0}).after, explainPower({before: 5, ones: 0}).tone], [5, "fine"]);
+  assert.deepEqual([explainPower({before: 4, ones: 2}).after, explainPower({before: 4, ones: 2}).tone], [2, "drain"]);
+  assert.equal(explainPower({before: 3, ones: 2}).tone, "low");
+  assert.equal(explainPower({before: 2, ones: 2}).tone, "dead");
+  assert.equal(explainPower({before: 1, ones: 1}).after, 0);
+});
+
+test("explainCard: success, stunts, fail, panic", () => {
+  const card = (base, stress, extra = {}) => ({title: "Observation", push: false, canPush: true, base, stress, ...extra});
+  const win = explainCard(card({n: 7, sixes: 1}, {n: 2, ones: 0, sixes: 2}));
+  assert.match(win.headline, /3 sixes/);
+  assert.ok(win.lines.some((l) => /2 to spend/.test(l)));
+  assert.equal(explainCard(card({n: 3, sixes: 0}, null)).tone, "bad");
+  const panic = explainCard(card({n: 3, sixes: 1}, {n: 2, ones: 1, sixes: 0}));
+  assert.equal(panic.tone, "warn");
+  assert.ok(panic.lines.some((l) => /Panic/.test(l)));
+  assert.equal(explainCard({title: "Power", base: null, stress: {n: 3, ones: 1, sixes: 0}}).headline, "Supply drops by 1");
+});

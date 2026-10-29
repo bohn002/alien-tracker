@@ -1,5 +1,28 @@
 <div class="mt-controls">
   <button type="button" data-action="scan" {{#if scanDisabled}}disabled{{/if}}>SCAN</button>
+  {{#if power}}
+  <div class="mt-power">
+    <div class="mt-battery" title="Power: {{power.value}}">
+      <span class="mt-battery-label">POWER {{power.value}}</span>
+      {{#each power.cells}}<i class="{{#if this}}full{{/if}}"></i>{{/each}}
+    </div>
+    <button type="button" data-action="power" {{#if powerDisabled}}disabled{{/if}} {{#unless power.value}}disabled{{/unless}}>POWER CHECK</button>
+  </div>
+  {{/if}}
+  {{#if power}}{{#if isGM}}
+  <div class="mt-power mt-power-gm">
+    <span class="mt-battery-label">GM POWER</span>
+    <button type="button" data-action="powerDown" {{#unless power.value}}disabled{{/unless}}>−1</button>
+    <button type="button" data-action="powerUp">+1</button>
+    <button type="button" data-action="recharge">RECHARGE (5)</button>
+  </div>
+  {{/if}}{{/if}}
+  {{#if powerResult}}
+  <div class="mt-power-result {{powerResult.tone}}">
+    <strong>{{powerResult.headline}}</strong>
+    <ul>{{#each powerResult.lines}}<li>{{this}}</li>{{/each}}</ul>
+  </div>
+  {{/if}}
   {{#if isGM}}
   <button type="button" data-action="lock" class="{{#if locked}}on{{/if}}">{{#if locked}}LOCKED{{else}}UNLOCKED{{/if}}</button>
   <button type="button" data-action="continuous" class="{{#if continuous}}on{{/if}}">CONTINUOUS</button>

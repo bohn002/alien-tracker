@@ -11,3 +11,19 @@
 .hope-motion-tracker .mt-controls button:disabled { opacity: 0.35; }
 .hope-motion-tracker .mt-viewers { flex-basis: 100%; border: 1px solid #5a3d00; margin: 0; padding: 4px 8px; }
 .hope-motion-tracker .mt-viewers label { display: inline-flex; align-items: center; gap: 4px; margin-right: 10px; }
+.hope-motion-tracker .mt-power { flex-basis: 100%; display: flex; align-items: center; gap: 6px; }
+.hope-motion-tracker .mt-battery { display: flex; align-items: center; gap: 3px; flex: 1; }
+.hope-motion-tracker .mt-battery-label { margin-right: 6px; letter-spacing: 1px; }
+.hope-motion-tracker .mt-battery i { width: 14px; height: 14px; border: 1px solid #5a3d00; }
+.hope-motion-tracker .mt-battery i.full { background: var(--mt-green); border-color: var(--mt-green); box-shadow: 0 0 5px var(--mt-green); }
+.hope-motion-tracker .mt-power-result { flex-basis: 100%; border: 1px solid var(--mt-amber); padding: 6px 8px; font-size: 12px; line-height: 1.35; }
+.hope-motion-tracker .mt-power-result ul { margin: 4px 0 0; padding-left: 16px; }
+.hope-motion-tracker .mt-power-result.fine { border-color: var(--mt-green); color: var(--mt-green); }
+.hope-motion-tracker .mt-power-result.low, .hope-motion-tracker .mt-power-result.dead { border-color: #ff5a4a; color: #ff5a4a; }
+
+/* Dice explainer on Alien RPG roll cards */
+.mt-explain { margin-top: 6px; font-size: 12px; border: 1px solid #5a3d00; padding: 2px 6px; }
+.mt-explain summary { cursor: pointer; font-weight: bold; }
+.mt-explain.fine summary { color: #2e8b3a; }
+.mt-explain.bad summary, .mt-explain.warn summary { color: #b3261e; }
+.mt-explain ul { margin: 4px 0; padding-left: 16px; }

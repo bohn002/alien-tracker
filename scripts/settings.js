@@ -23,6 +23,15 @@ export function registerSettings() {
   world("soundMedium", "Medium ping sound", "Sound played for a contact in the medium band.", String, sound("medium"), {filePicker: "audio"});
   world("soundFar", "Far ping sound", "Sound played for a contact in the long or extreme band.", String, sound("far"), {filePicker: "audio"});
 
+  reg("explainRolls", {
+    name: "Explain dice rolls",
+    hint: "Add a short plain-language explanation under each Alien RPG roll card in chat (on this client).",
+    scope: "client",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
   reg("trackers", {scope: "world", config: false, type: Object, default: {}});
 
   reg("volume", {

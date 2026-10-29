@@ -1,5 +1,6 @@
 import {MODULE_ID} from "./settings.js";
-import {requestScan} from "./engine.js";
+import {requestScan, requestPowerRoll} from "./engine.js";
+import {powerOf, setPower} from "./power.js";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 const SIZE = 360;
@@ -18,6 +19,10 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     position: {width: 360},
     actions: {
       scan: TrackerApp.#onScan,
+      power: TrackerApp.#onPower,
+      powerDown: TrackerApp.#onPowerStep,
+      powerUp: TrackerApp.#onPowerStep,
+      recharge: TrackerApp.#onRecharge,
       lock: TrackerApp.#onLock,
       continuous: TrackerApp.#onContinuous,
     },
@@ -39,6 +44,10 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   // Called when the trackers setting changes: refresh the controls and the OFFLINE/STANDBY state.
+  static refreshPower(actorId) {
+    for (const app of apps.values()) if (app.carrier.endsWith(actorId)) app.render({parts: ["controls"]});
+  }
+
   static refresh() {
     for (const app of apps.values()) {
       app.#sync();
@@ -62,6 +71,7 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   #cues = [];
   #nearest = null; // {text, at, until}
   #shown = {};
+  #powerResult = null;
 
   constructor(carrier) {
     const name = fromUuidSync(carrier)?.name ?? "Unknown";
@@ -71,7 +81,12 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _prepareContext() {
     const t = trackerState(this.carrier);
+    const actor = fromUuidSync(this.carrier);
+    const power = actor?.testUserPermission?.(game.user, "OBSERVER") ? powerOf(actor) : null;
     return {
+      power: power === null ? null : {value: power, cells: Array.from({length: Math.max(5, power)}, (_, i) => i < power)},
+      powerResult: this.#powerResult,
+      powerDisabled: !t || t.locked,
       isGM: game.user.isGM,
       locked: t?.locked ?? true,
       continuous: !!t?.continuous,
@@ -112,6 +127,21 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     requestScan(this.carrier);
   }
 
+  static #onPower() {
+    requestPowerRoll(this.carrier);
+  }
+
+  // GM only (the buttons are not drawn for players).
+  static #onPowerStep(event, target) {
+    if (!game.user.isGM) return;
+    const actor = fromUuidSync(this.carrier);
+    setPower(actor, powerOf(actor) + (target.dataset.action === "powerUp" ? 1 : -1));
+  }
+
+  static #onRecharge() {
+    if (game.user.isGM) setPower(fromUuidSync(this.carrier), 5);
+  }
+
   static #onLock() {
     this.#edit((t) => (t.locked = !t.locked));
   }
@@ -142,6 +172,10 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
         this.#scanning = this.#glitch = false;
         this.#status = p.text;
       }
+      return this.render({parts: ["controls"]});
+    }
+    if (p.type === "powerResult") {
+      this.#powerResult = p;
       return this.render({parts: ["controls"]});
     }
     if (p.type !== "contacts") return; // e.g. a player's scan request, which the engine handles

@@ -1,6 +1,6 @@
 // Pure helpers first. No Foundry globals at module level, so node can import this file.
 import {MODULE_ID} from "./settings.js";
-import {powerCheck} from "./power.js";
+import {powerCheck, rollPower, powerOf} from "./power.js";
 
 export function band(d, {short, medium, long}) {
   if (d <= short) return "SHORT";
@@ -161,11 +161,38 @@ async function handleScan(carrier, userId) {
   }
 }
 
-// Called on every client for every socket message; only the active GM acts on scan requests.
+// A manual Power Supply roll from the tracker panel. Same access rules as a scan, but allowed mid-scan.
+async function handlePowerRoll(carrier, userId) {
+  const t = trackers()[carrier];
+  const user = game.users.get(userId);
+  const token = carrierToken(carrier);
+  if (!t || t.locked || !user || pending.has(carrier)) return;
+  if (!token) return send({type: "status", carrier, text: "NO SIGNAL"});
+  if (!t.viewers.includes(userId) && !token.actor?.testUserPermission(user, "OWNER")) return;
+  pending.add(carrier);
+  try {
+    if (powerOf(token.actor) === null) return ui.notifications.warn(`No motion tracker item found on ${token.name}.`);
+    const result = await rollPower(token);
+    if (!result) return send({type: "powerResult", carrier, tone: "dead", headline: "DEAD: no power left", lines: ["Power is 0. Find a replacement battery cell or recharge it at a terminal."]});
+    send({type: "powerResult", carrier, ...result});
+    if (result.after <= 0) stop(carrier, "NO POWER");
+  } finally {
+    pending.delete(carrier);
+  }
+}
+
+// Called on every client for every socket message; only the active GM acts on requests.
 export function handleSocket(data, senderId) {
   // Foundry's module socket relays args as-is (the 2nd arg is not a user id), so trust the packet.
   // shortcut: a player could spoof another viewer's id; fine for a trusted table.
-  if (data?.type === "scan" && isActiveGM()) handleScan(data.carrier, data.userId);
+  if (!isActiveGM()) return;
+  if (data?.type === "scan") handleScan(data.carrier, data.userId);
+  else if (data?.type === "powerRoll") handlePowerRoll(data.carrier, data.userId);
+}
+
+export function requestPowerRoll(carrier) {
+  if (isActiveGM()) handlePowerRoll(carrier, game.userId);
+  else game.socket.emit(CHANNEL, {type: "powerRoll", carrier, userId: game.userId});
 }
 
 // Any client may press SCAN: the active GM runs it directly, everyone else asks over the socket.
