@@ -24,7 +24,6 @@ The GM's client works out what is moving, including hidden tokens, and sends the
 - **Floors on one scene.** Draw regions named `MT Level 1`, `MT Level 2` and so on, and contacts on another floor read as above or below (▲ ▼) with the floor height added to the distance.
 - **Optional Power roll.** With the setting on, each SCAN rolls the system's own supply roll for the character's *M314 Motion Tracker* item. Rolling 1s drains Power and glitches the screen, and at 0 the tracker shows NO POWER.
 - **Battery and Power checks.** The tracker shows its Power as battery cells and has a **POWER CHECK** button: it rolls dice equal to the current Power, each 1 drains 1 Power, and a panel (plus a chat card) explains the result in plain words. At 0 Power the tracker goes dark and refuses scans until the GM recharges it. The GM gets **-1 / +1 / Recharge** buttons on the window.
-- **Dice 101.** Every Alien RPG roll card in chat gets a collapsible "What does this mean?" line that explains the sixes, stunts, stress 1s and Push in plain language. Each player can turn it off in settings.
 - **Follows the character.** A tracker belongs to a character, so it keeps working on whichever scene their token is in.
 
 ## Install
@@ -78,7 +77,6 @@ All under **Configure Settings → Alien Motion Tracker**. Defaults in brackets.
 | Floor height (3m) | Added between `MT Level` floors |
 | Readout jitter (on) | ±1m on the readout |
 | Roll for power (off) | Each SCAN first makes a Power check automatically |
-| Explain dice rolls (on, per player) | Add the plain-language explanation under roll cards |
 | Sound files | Sweep, close, medium and far sounds |
 | Volume (per player, 0.8) | Each player's own volume |
 
@@ -87,6 +85,10 @@ All under **Configure Settings → Alien Motion Tracker**. Defaults in brackets.
 - The GM's client (the highest-role connected GM) listens for token moves, builds the contact list on each sweep, and sends it over Foundry's module socket.
 - The scan button sends a request over the socket. The GM client checks that the tracker is unlocked and that the player is a viewer or owns the character before it runs.
 - The screen is a plain Canvas 2D drawing, with no extra graphics libraries.
+
+## Related
+
+- [Explain My Roll](https://github.com/bohn002/explain-my-roll) adds a plain-language explanation under every Alien RPG roll card, for players new to the system. It started life in this module and is now separate.
 
 ## Not included
 

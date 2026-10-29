@@ -20,11 +20,3 @@
 .hope-motion-tracker .mt-power-result ul { margin: 4px 0 0; padding-left: 16px; }
 .hope-motion-tracker .mt-power-result.fine { border-color: var(--mt-green); color: var(--mt-green); }
 .hope-motion-tracker .mt-power-result.low, .hope-motion-tracker .mt-power-result.dead { border-color: #ff5a4a; color: #ff5a4a; }
-
-/* Dice explainer on Alien RPG roll cards (the cards are dark, so use bright text) */
-.mt-explain { margin-top: 8px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.4; border: 1px solid #ffb000; padding: 4px 8px; color: #f2f2f2; }
-.mt-explain summary { cursor: pointer; font-size: 17px; font-weight: 800; color: #ffb000; text-shadow: 0 0 4px rgba(0, 0, 0, 0.8); }
-.mt-explain.fine summary { color: #7dff8a; }
-.mt-explain.bad summary, .mt-explain.warn summary { color: #ff8a7a; }
-.mt-explain ul { margin: 6px 0 2px; padding-left: 18px; font-weight: 600; }
-.mt-explain li { margin-bottom: 3px; }
