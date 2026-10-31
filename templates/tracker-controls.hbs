@@ -1,5 +1,5 @@
 <div class="mt-controls">
-  <button type="button" data-action="scan" class="mt-scan" {{#if scanDisabled}}disabled{{/if}}>SCAN</button>
+  <button type="button" data-action="scan" class="mt-scan" {{#if scanDisabled}}disabled{{/if}}><i class="fa-solid fa-satellite-dish" inert></i> SCAN</button>
   {{#if power}}
   <div class="mt-power level-{{power.level}}">
     <div class="mt-battery" title="Power: {{power.value}}">
@@ -14,7 +14,7 @@
     <span class="mt-battery-label">GM POWER</span>
     <button type="button" data-action="powerDown" {{#unless power.value}}disabled{{/unless}}>−</button>
     <button type="button" data-action="powerUp" {{#if power.atMax}}disabled{{/if}}>+</button>
-    <button type="button" data-action="recharge" {{#if power.atMax}}disabled{{/if}}>RECHARGE</button>
+    <button type="button" data-action="recharge" {{#if power.atMax}}disabled{{/if}}><i class="fa-solid fa-bolt" inert></i> RECHARGE</button>
   </div>
   {{/if}}{{/if}}
   {{#if powerResult}}
