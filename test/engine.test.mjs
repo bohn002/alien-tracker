@@ -122,3 +122,33 @@ import {powerLevel} from "../scripts/power.js";
 test("powerLevel: 0 dead, 1 red, 2-3 yellow, 4-5 green", () => {
   assert.deepEqual([0, 1, 2, 3, 4, 5].map(powerLevel), ["dead", "red", "yellow", "yellow", "green", "green"]);
 });
+
+import {facingAngle, angleDiff, inArc, mergeSwarms, jamNoise} from "../scripts/geometry.js";
+
+test("facingAngle: rotation 0 faces south, 90 faces west, 180 north", () => {
+  assert.ok(Math.abs(facingAngle(0) - Math.PI / 2) < 1e-9);
+  assert.ok(Math.abs(facingAngle(90) - Math.PI) < 1e-9);
+  assert.ok(Math.abs(angleDiff(facingAngle(180), -Math.PI / 2)) < 1e-9);
+});
+
+test("angleDiff wraps around and inArc uses half the width", () => {
+  assert.ok(Math.abs(angleDiff(0.1, -0.1 + Math.PI * 2) - 0.2) < 1e-9);
+  assert.equal(inArc(0.7, 0, Math.PI / 2), true); // 40 degrees, inside a 90 degree cone
+  assert.equal(inArc(0.9, 0, Math.PI / 2), false); // 51 degrees
+});
+
+test("mergeSwarms: far members merge, near members stay, others untouched", () => {
+  const c = (d, b, swarm) => ({d, b, swarm, band: "X", elev: 0});
+  const out = mergeSwarms([c(40, 0, "A"), c(40, 0, "A"), c(15, 0, "A"), c(30, 1, null), c(60, 2, "B")], 25);
+  assert.equal(out.length, 4); // merged A pair, near A, loose, lone B
+  assert.equal(out.find((x) => x.n)?.n, 2);
+  assert.ok(out.some((x) => x.swarm === "B" && !x.n));
+  assert.deepEqual(out.map((x) => x.d), [...out.map((x) => x.d)].sort((a, b) => a - b));
+});
+
+test("jamNoise stays within bounds and never goes negative", () => {
+  for (const r of [0, 0.5, 1]) {
+    const j = jamNoise({d: 2, b: 1}, 6, 0.35, () => r);
+    assert.ok(j.d >= 0 && j.d <= 8 && Math.abs(j.b - 1) <= 0.35 + 1e-9);
+  }
+});

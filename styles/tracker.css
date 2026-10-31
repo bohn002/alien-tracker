@@ -31,6 +31,19 @@
 .hope-motion-tracker .mt-power.level-red .mt-battery-label { animation: mt-pulse 0.9s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .hope-motion-tracker .mt-power.level-red * { animation: none !important; } }
 .hope-motion-tracker .mt-controls button.mt-scan { flex-basis: 100%; min-height: 3.6em; font-size: 1.1em; }
+.hope-motion-tracker .mt-controls button.mt-scan.half { flex-basis: calc(50% - 3px); }
 @keyframes mt-standby { 50% { opacity: 0.3; } }
 .hope-motion-tracker .mt-status[data-state="STANDBY"] { animation: mt-standby 2.4s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .hope-motion-tracker .mt-status[data-state="STANDBY"] { animation: none; } }
+
+/* Screen: the glass holds the canvas and its overlays; the CRT skin adds a bezel around it. */
+.hope-motion-tracker .mt-glass { position: relative; }
+.hope-motion-tracker .mt-plate { display: none; }
+.hope-motion-tracker .mt-screen.skin-crt { padding: 16px 30px 8px; background: linear-gradient(#41443a, #25271f 70%, #1b1c16); border-bottom: 2px solid #0c0d0a; }
+.hope-motion-tracker .skin-crt::before, .hope-motion-tracker .skin-crt::after { content: ""; position: absolute; top: 28px; bottom: 36px; width: 7px; background: repeating-linear-gradient(to bottom, #ff8a1f 0 3px, transparent 3px 14px); opacity: 0.85; }
+.hope-motion-tracker .skin-crt::before { left: 12px; }
+.hope-motion-tracker .skin-crt::after { right: 12px; }
+.hope-motion-tracker .skin-crt canvas { border-radius: 14px / 18px; box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.9), 0 0 0 3px #11120e, 0 0 14px rgba(125, 255, 138, 0.25); cursor: default; }
+.hope-motion-tracker .skin-crt .mt-readout, .hope-motion-tracker .skin-crt .mt-status { color: #9dff9d; text-shadow: 0 0 6px #5dff6d; left: 18px; }
+.hope-motion-tracker .skin-crt .mt-plate { display: block; text-align: center; font-size: 10px; letter-spacing: 3px; padding: 6px 0 2px; color: #8a8d7c; }
+.hope-motion-tracker .mt-phantom canvas { cursor: crosshair; }

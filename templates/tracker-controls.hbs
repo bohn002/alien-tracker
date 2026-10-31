@@ -1,5 +1,10 @@
 <div class="mt-controls">
-  <button type="button" data-action="scan" class="mt-scan" {{#if scanDisabled}}disabled{{/if}}><i class="fa-solid fa-satellite-dish" inert></i> SCAN</button>
+  {{#if directional}}
+  <button type="button" data-action="scan" data-mode="omni" class="mt-scan half" {{#if scanDisabled}}disabled{{/if}}><i class="fa-solid fa-satellite-dish" inert></i> SCAN 360</button>
+  <button type="button" data-action="scan" data-mode="dir" class="mt-scan half" {{#if scanDisabled}}disabled{{/if}}><i class="fa-solid fa-location-crosshairs" inert></i> SCAN ARC</button>
+  {{else}}
+  <button type="button" data-action="scan" data-mode="omni" class="mt-scan" {{#if scanDisabled}}disabled{{/if}}><i class="fa-solid fa-satellite-dish" inert></i> SCAN</button>
+  {{/if}}
   {{#if power}}
   <div class="mt-power level-{{power.level}}">
     <div class="mt-battery" title="Power: {{power.value}}">
@@ -26,6 +31,7 @@
   {{#if isGM}}
   <button type="button" data-action="lock" class="{{#if locked}}on{{/if}}">{{#if locked}}<i class="fa-solid fa-lock" inert></i> LOCKED{{else}}<i class="fa-solid fa-lock-open" inert></i> UNLOCKED{{/if}}</button>
   <button type="button" data-action="continuous" class="{{#if continuous}}on{{/if}}"><i class="fa-solid fa-rotate" inert></i> CONTINUOUS</button>
+  <button type="button" data-action="phantom" class="{{#if phantomMode}}on{{/if}}" title="Click, then click the screen to place a fake contact"><i class="fa-solid fa-ghost" inert></i> PHANTOM</button>
   <fieldset class="mt-viewers">
     <legend>Show to</legend>
     {{#each users}}

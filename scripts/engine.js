@@ -1,6 +1,7 @@
 // Pure helpers first. No Foundry globals at module level, so node can import this file.
 import {MODULE_ID} from "./settings.js";
 import {powerCheck, rollPower, powerOf} from "./power.js";
+import {facingAngle, inArc, jamNoise, mergeSwarms} from "./geometry.js";
 
 export function band(d, {short, medium, long}) {
   if (d <= short) return "SHORT";
@@ -46,15 +47,22 @@ const MAX_CONTACTS = 20;
 const lastMoved = new Map(); // tokenId -> ms
 const bursts = new Map(); // carrier uuid -> {left, glitch, timer}
 const pending = new Set(); // carriers awaiting a power roll
+const phantoms = new Map(); // carrier uuid -> [{d, b, left, until}] fake contacts the GM placed
 let deliverLocal = () => {};
 
 const setting = (key) => game.settings.get(MODULE_ID, key);
 const trackers = () => setting("trackers");
 const isActiveGM = () => game.users.activeGM?.isSelf === true;
 
+// Only the GMs and the players the tracker is shown to receive its packets, so nobody else hears or sees it.
+function audience(key) {
+  const viewers = trackers()[key]?.viewers ?? [];
+  return [...new Set([...game.users.filter((u) => u.isGM).map((u) => u.id), ...viewers])];
+}
+
 // game.socket.emit does not echo to the sender, so the GM's own window gets it directly.
 function send(packet) {
-  game.socket.emit(CHANNEL, packet);
+  game.socket.emit(CHANNEL, packet, {recipients: audience(packet.carrier)});
   deliverLocal(packet);
 }
 
@@ -86,40 +94,59 @@ function carrierToken(key) {
   return on(game.scenes.active) ?? game.scenes.map(on).find(Boolean) ?? null;
 }
 
-function sweep(carrierUuid, glitch) {
+const inRegion = (r, p) => (typeof r.testPoint === "function" ? r.testPoint(p) : r.bounds.contains(p.x, p.y));
+
+function sweep(carrierUuid, glitch, mode = "omni") {
   const carrier = carrierToken(carrierUuid);
   const scene = carrier?.parent;
   if (!scene) return false;
-  const range = setting("range");
+  const dir = mode === "dir" && setting("directional");
+  const range = setting("range") * (dir ? setting("arcRange") : 1);
+  const facing = facingAngle(carrier.rotation ?? 0);
+  const arc = dir ? (setting("arcWidth") * Math.PI) / 180 : null;
   const floors = [];
   for (const r of scene.regions) {
     const m = /^MT Level (\d+)/i.exec(r.name);
     if (m) floors.push({level: Number(m[1]), x: r.bounds.x, y: r.bounds.y, w: r.bounds.width, h: r.bounds.height});
   }
+  const jams = setting("jamZones") ? scene.regions.filter((r) => /^MT Jam/i.test(r.name)) : [];
+  const jammed = (t) => jams.some((r) => inRegion(r, t.getCenterPoint()));
   const at = (t) => {
     const c = t.getCenterPoint();
     return {...floorOffset(c, floors), elevation: c.elevation};
   };
   const origin = at(carrier);
+  const carrierJammed = jammed(carrier);
   const grid = {gridSize: scene.grid.size, gridDistance: scene.grid.distance, floorHeight: setting("floorHeight")};
   const bands = {short: setting("bandShort"), medium: setting("bandMedium"), long: setting("bandLong")};
   const windowMs = setting("motionWindow") * 1000;
   const includePCs = setting("includePCs");
+  const swarms = setting("swarms");
   const now = Date.now();
 
-  const found = [];
+  let found = [];
   for (const t of scene.tokens) {
     if (t.id === carrier.id) continue;
     if (!includePCs && t.actor?.hasPlayerOwner) continue;
     const mode = t.getFlag(MODULE_ID, "mode") ?? "auto";
     if (!isMoving(mode, lastMoved.get(t.id), now, windowMs)) continue;
-    const c = toContact(origin, at(t), grid);
-    if (c.d <= range) found.push({...c, band: band(c.d, bands)});
+    let c = toContact(origin, at(t), grid);
+    if (c.d > range || (dir && !inArc(c.b, facing, arc))) continue;
+    if (carrierJammed || jammed(t)) c = {...c, ...jamNoise(c)}; // static scrambles the reading
+    found.push({...c, band: band(c.d, bands), swarm: swarms ? t.getFlag(MODULE_ID, "swarm") || null : null});
   }
+  if (swarms) found = mergeSwarms(found, bands.medium);
+  // GM-placed phantoms count as contacts for a couple of sweeps.
+  const fakes = (phantoms.get(carrierUuid) ?? []).filter((p) => p.left > 0 && p.until > now);
+  for (const p of fakes) {
+    p.left--;
+    if (p.d <= range && (!dir || inArc(p.b, facing, arc))) found.push({d: p.d, b: p.b, elev: 0, band: band(p.d, bands)});
+  }
+  phantoms.set(carrierUuid, fakes.filter((p) => p.left > 0));
   found.sort((a, b) => a.d - b.d);
   const jit = setting("jitter");
-  const contacts = found.slice(0, MAX_CONTACTS).map(({d, b, band, elev}) => ({d: jit ? jitter(d) : d, b, band, elev}));
-  send({type: "contacts", carrier: carrierUuid, units: scene.grid.units, glitch, contacts});
+  const contacts = found.slice(0, MAX_CONTACTS).map(({d, b, band, elev, n}) => ({d: jit ? jitter(d) : d, b, band, elev, ...(n ? {n} : {})}));
+  send({type: "contacts", carrier: carrierUuid, units: scene.grid.units, glitch: glitch || carrierJammed, contacts, range, facing, arc});
   return true;
 }
 
@@ -129,14 +156,14 @@ function stop(carrier, text) {
   send({type: "status", carrier, text});
 }
 
-export function startScan(carrier, glitch = false) {
+export function startScan(carrier, glitch = false, mode = "omni") {
   if (bursts.has(carrier)) return;
-  const burst = {left: setting("burstSweeps"), glitch, timer: null};
+  const burst = {left: setting("burstSweeps"), glitch, mode, timer: null};
   bursts.set(carrier, burst);
   const tick = () => {
     const t = trackers()[carrier];
     if (!isActiveGM() || !t || t.locked) return stop(carrier, "OFFLINE");
-    if (!sweep(carrier, burst.glitch)) return stop(carrier, "NO SIGNAL");
+    if (!sweep(carrier, burst.glitch, burst.mode)) return stop(carrier, "NO SIGNAL");
     // Wait one more sweep before STANDBY so clients can finish drawing the last ring.
     if (--burst.left <= 0 && !t.continuous) burst.timer = setTimeout(() => stop(carrier, "STANDBY"), setting("sweepSeconds") * 1000);
     else burst.timer = setTimeout(tick, setting("sweepSeconds") * 1000);
@@ -144,7 +171,7 @@ export function startScan(carrier, glitch = false) {
   tick();
 }
 
-async function handleScan(carrier, userId) {
+async function handleScan(carrier, userId, mode = "omni") {
   const t = trackers()[carrier];
   const user = game.users.get(userId);
   const token = carrierToken(carrier);
@@ -155,7 +182,7 @@ async function handleScan(carrier, userId) {
   try {
     const p = await powerCheck(token);
     if (p.dead) send({type: "status", carrier, text: "NO POWER"});
-    else startScan(carrier, !!p.glitch);
+    else startScan(carrier, !!p.glitch, mode === "dir" ? "dir" : "omni");
   } finally {
     pending.delete(carrier);
   }
@@ -186,8 +213,21 @@ export function handleSocket(data, senderId) {
   // Foundry's module socket relays args as-is (the 2nd arg is not a user id), so trust the packet.
   // shortcut: a player could spoof another viewer's id; fine for a trusted table.
   if (!isActiveGM()) return;
-  if (data?.type === "scan") handleScan(data.carrier, data.userId);
+  if (data?.type === "scan") handleScan(data.carrier, data.userId, data.mode);
+  else if (data?.type === "phantom" && game.users.get(data.userId)?.isGM) addPhantom(data.carrier, data.d, data.b);
   else if (data?.type === "powerRoll") handlePowerRoll(data.carrier, data.userId);
+}
+
+// GM only: a fake contact that shows in the next sweeps (about 2 minutes to be used, 2 sweeps once it appears).
+function addPhantom(carrier, d, b) {
+  if (!trackers()[carrier] || !Number.isFinite(d) || !Number.isFinite(b)) return;
+  phantoms.set(carrier, [...(phantoms.get(carrier) ?? []), {d, b, left: 2, until: Date.now() + 120000}]);
+}
+
+export function requestPhantom(carrier, d, b) {
+  if (!game.user.isGM) return;
+  if (isActiveGM()) addPhantom(carrier, d, b);
+  else game.socket.emit(CHANNEL, {type: "phantom", carrier, userId: game.userId, d, b});
 }
 
 export function requestPowerRoll(carrier) {
@@ -196,9 +236,9 @@ export function requestPowerRoll(carrier) {
 }
 
 // Any client may press SCAN: the active GM runs it directly, everyone else asks over the socket.
-export function requestScan(carrier) {
-  if (isActiveGM()) handleScan(carrier, game.userId);
-  else game.socket.emit(CHANNEL, {type: "scan", carrier, userId: game.userId});
+export function requestScan(carrier, mode = "omni") {
+  if (isActiveGM()) handleScan(carrier, game.userId, mode);
+  else game.socket.emit(CHANNEL, {type: "scan", carrier, userId: game.userId, mode});
 }
 
 export function onTrackersChanged(prev, next) {

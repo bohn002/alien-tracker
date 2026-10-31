@@ -86,6 +86,28 @@ Hooks.on("renderTokenHUD", (hud, html) => {
     hud.render();
   });
   html.querySelector(".col.left").append(button);
+
+  if (!game.settings.get(MODULE_ID, "swarms")) return;
+  // Swarm: tokens sharing a name read as one blip until they come within the medium band.
+  const swarm = hud.document.getFlag(MODULE_ID, "swarm");
+  const sw = document.createElement("button");
+  sw.type = "button";
+  sw.className = `control-icon${swarm ? " active" : ""}`;
+  sw.dataset.tooltip = swarm ? `Swarm: ${swarm}` : "Swarm: none";
+  sw.setAttribute("aria-label", sw.dataset.tooltip);
+  sw.innerHTML = '<i class="fa-solid fa-bugs" inert></i>';
+  sw.addEventListener("click", async () => {
+    const name = await foundry.applications.api.DialogV2.prompt({
+      window: {title: "Swarm name"},
+      content: `<p>Tokens with the same swarm name read as one blip until they get close. Leave empty to remove.</p><input type="text" name="swarm" value="${swarm ?? ""}" autofocus>`,
+      ok: {callback: (event, button) => button.form.elements.swarm.value.trim()},
+      rejectClose: false,
+    });
+    if (name === undefined || name === null) return;
+    await (name ? hud.document.setFlag(MODULE_ID, "swarm", name) : hud.document.unsetFlag(MODULE_ID, "swarm"));
+    hud.render();
+  });
+  html.querySelector(".col.left").append(sw);
 });
 
 // Keep the Power meter in sync with the sheet.
