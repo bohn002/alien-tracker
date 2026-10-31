@@ -1,6 +1,6 @@
 import {MODULE_ID} from "./settings.js";
 import {requestScan, requestPowerRoll} from "./engine.js";
-import {MAX_POWER, powerLevel, powerOf, setPower} from "./power.js";
+import {maxPower, powerLevel, powerOf, setPower} from "./power.js";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 const SIZE = 360;
@@ -87,7 +87,7 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const power = actor?.testUserPermission?.(game.user, "OBSERVER") ? powerOf(actor) : null;
     this.#level = power === null ? null : powerLevel(power);
     return {
-      power: power === null ? null : {value: power, level: powerLevel(power), atMax: power >= MAX_POWER, cells: Array.from({length: MAX_POWER}, (_, i) => i < power)},
+      power: power === null ? null : {value: power, level: powerLevel(power), atMax: power >= maxPower(), cells: Array.from({length: maxPower()}, (_, i) => i < power)},
       powerResult: this.#powerResult,
       powerDisabled: !t || t.locked,
       isGM: game.user.isGM,
@@ -142,7 +142,7 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static #onRecharge() {
-    if (game.user.isGM) setPower(fromUuidSync(this.carrier), MAX_POWER);
+    if (game.user.isGM) setPower(fromUuidSync(this.carrier), maxPower());
   }
 
   static #onLock() {
@@ -233,7 +233,10 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     if (this.#shown[key] === text) return;
     this.#shown[key] = text;
     const el = this.element.querySelector(`[data-${key}]`);
-    if (el) el.textContent = text;
+    if (el) {
+      el.textContent = text;
+      el.dataset.state = text; // lets CSS pulse STANDBY
+    }
   }
 
   #draw(ctx, now, fade) {

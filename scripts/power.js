@@ -1,7 +1,8 @@
 import {MODULE_ID} from "./settings.js";
 import {explainPower} from "./explain.js";
 
-export const MAX_POWER = 5;
+// Tracker battery size, a world setting (default 5).
+export const maxPower = () => game.settings.get(MODULE_ID, "maxPower");
 export const powerLevel = (v) => (v <= 0 ? "dead" : v === 1 ? "red" : v <= 3 ? "yellow" : "green");
 
 export const trackerItem = (actor) => actor?.items.find((i) => /motion tracker/i.test(i.name));
@@ -17,7 +18,7 @@ export async function setPower(actor, value) {
   const item = trackerItem(actor);
   const before = powerOf(actor);
   if (!item) return;
-  value = Math.min(MAX_POWER, Math.max(0, Math.round(value)));
+  value = Math.min(maxPower(), Math.max(0, Math.round(value)));
   await item.update({"system.attributes.power.value": value});
   const total = Number(actor.system.consumables?.power?.value);
   if (Number.isFinite(total)) await actor.update({"system.consumables.power.value": Math.max(0, total + value - before)});

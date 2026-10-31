@@ -40,15 +40,29 @@ Then enable **Alien Motion Tracker** in your world. Requires Foundry v13 or v14 
 
 ## Using it
 
-**GM setup (once per character)**
+### GM setup (once per character)
 
 1. Select the character's token and click the satellite-dish button in the token controls.
 2. A tracker window opens, **locked**. The character's owners are added as viewers.
 3. Click **LOCKED** to unlock it when the scene calls for it. Use **Show to** to choose who sees it.
 
-Players get their own window automatically when they are made a viewer, and the dish button reopens it.
+Players get their own window automatically when they are made a viewer, and the dish button reopens it. Trackers belong to a character, not a token, so they keep working when the character changes scene.
 
-**Setting up tokens**
+### The tracker window
+
+| Control | Who | What it does |
+|---|---|---|
+| **SCAN** | players, GM | Runs one burst of sweeps (3 by default), then the screen pulses on STANDBY. Disabled while locked or mid-scan. |
+| **POWER n** and the battery cells | everyone who can see the character | Current charge. Green at 4–5, yellow at 2–3, red and pulsing at 1, grey at 0. |
+| **POWER CHECK** | players, GM | Rolls dice equal to the current Power. Each 1 drains 1 Power. A panel and a chat card explain the result. |
+| **− / + / RECHARGE** | GM only | Set the Power by hand. + and Recharge are disabled when full, − when empty. |
+| **LOCKED / UNLOCKED** | GM only | A locked tracker shows OFFLINE and refuses scans and Power checks. |
+| **CONTINUOUS** | GM only | The tracker sweeps on its own until you switch it off, for scripted moments. |
+| **Show to** | GM only | Which players get this tracker. |
+
+At 0 Power the tracker shows NO POWER and refuses scans until the GM recharges it, as in a dead battery that needs replacing.
+
+### Setting up tokens
 
 Right-click a token and click the motion button on the Token HUD until it shows what you want:
 
@@ -58,7 +72,7 @@ Right-click a token and click the motion button on the Token HUD until it shows 
 | Always moving | every scan (mice, a scratching vent, a Drone battering a door) |
 | Dormant | never, however it moves |
 
-**Several floors on one scene**
+### Several floors on one scene
 
 Draw one rectangle Region per floor and name them `MT Level 1`, `MT Level 2`, and so on. They must be the same size and line up so the same spot on each floor has the same offset. Each token is measured from the top-left corner of its own floor. Scenes without these regions are measured as one flat plane.
 
@@ -76,9 +90,10 @@ All under **Configure Settings → Alien Motion Tracker**. Defaults in brackets.
 | Detect player characters (on) | Moving PCs ping too |
 | Floor height (3m) | Added between `MT Level` floors |
 | Readout jitter (on) | ±1m on the readout |
+| Battery size (5) | Maximum Power charges. Recharge fills to this |
 | Roll for power (off) | Each SCAN first makes a Power check automatically |
 | Sound files | Sweep, close, medium and far sounds |
-| Volume (per player, 0.8) | Each player's own volume |
+| Scanner volume (per player, 0.8) | Each player's own volume |
 
 ## How it works
 

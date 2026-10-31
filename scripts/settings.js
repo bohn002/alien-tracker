@@ -17,6 +17,7 @@ export function registerSettings() {
   world("includePCs", "Detect player characters", "Player-owned tokens that move nearby also show on the scanner.", Boolean, true);
   world("floorHeight", "Floor height (m)", "Vertical distance between floor regions on the same scene.", Number, 3);
   world("jitter", "Readout jitter", "Show the distance readout with a random error of plus or minus 1m.", Boolean, true);
+  world("maxPower", "Battery size", "Maximum Power charges of a motion tracker (the rules say 5). Recharge fills to this.", Number, 5, {range: {min: 1, max: 10, step: 1}});
   world("rollPower", "Roll for power", "Each SCAN first rolls the tracker's power supply.", Boolean, false);
   world("soundWave", "Sweep sound", "Sound played on each sweep.", String, sound("wave"), {filePicker: "audio"});
   world("soundClose", "Close ping sound", "Sound played for a contact in the short band.", String, sound("close"), {filePicker: "audio"});
