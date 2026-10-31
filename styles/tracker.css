@@ -20,3 +20,13 @@
 .hope-motion-tracker .mt-power-result ul { margin: 4px 0 0; padding-left: 16px; }
 .hope-motion-tracker .mt-power-result.fine { border-color: var(--mt-green); color: var(--mt-green); }
 .hope-motion-tracker .mt-power-result.low, .hope-motion-tracker .mt-power-result.dead { border-color: #ff5a4a; color: #ff5a4a; }
+.hope-motion-tracker .mt-power { --mt-level: var(--mt-green); }
+.hope-motion-tracker .mt-power.level-red { --mt-level: #ff4a3a; }
+.hope-motion-tracker .mt-power.level-yellow { --mt-level: #ffd23a; }
+.hope-motion-tracker .mt-power.level-dead { --mt-level: #5a5a5a; }
+.hope-motion-tracker .mt-power .mt-battery-label { color: var(--mt-level); }
+.hope-motion-tracker .mt-battery i.full { background: var(--mt-level); border-color: var(--mt-level); box-shadow: 0 0 5px var(--mt-level); }
+@keyframes mt-pulse { 50% { opacity: 0.25; } }
+.hope-motion-tracker .mt-power.level-red .mt-battery i.full,
+.hope-motion-tracker .mt-power.level-red .mt-battery-label { animation: mt-pulse 0.9s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .hope-motion-tracker .mt-power.level-red * { animation: none !important; } }

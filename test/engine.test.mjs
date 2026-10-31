@@ -116,3 +116,9 @@ test("explainPower: no ones holds, ones drain, zero kills", () => {
   assert.equal(explainPower({before: 2, ones: 2}).tone, "dead");
   assert.equal(explainPower({before: 1, ones: 1}).after, 0);
 });
+
+import {powerLevel} from "../scripts/power.js";
+
+test("powerLevel: 0 dead, 1 red, 2-3 yellow, 4-5 green", () => {
+  assert.deepEqual([0, 1, 2, 3, 4, 5].map(powerLevel), ["dead", "red", "yellow", "yellow", "green", "green"]);
+});

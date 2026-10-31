@@ -1,6 +1,6 @@
 import {MODULE_ID} from "./settings.js";
 import {requestScan, requestPowerRoll} from "./engine.js";
-import {powerOf, setPower} from "./power.js";
+import {MAX_POWER, powerLevel, powerOf, setPower} from "./power.js";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 const SIZE = 360;
@@ -8,6 +8,7 @@ const CENTER = SIZE / 2;
 const RADIUS = CENTER - 10;
 const FADE_SWEEPS = 1.5;
 const apps = new Map(); // carrier uuid -> TrackerApp
+const LEVEL_RGB = {dead: "90, 90, 90", red: "255, 74, 58", yellow: "255, 210, 58", green: "125, 255, 138"};
 const bg = new Image();
 bg.src = `modules/${MODULE_ID}/assets/m314_background.png`;
 
@@ -72,6 +73,7 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   #nearest = null; // {text, at, until}
   #shown = {};
   #powerResult = null;
+  #level = null; // dead|red|yellow|green once the viewer can see the tracker item
 
   constructor(carrier) {
     const name = fromUuidSync(carrier)?.name ?? "Unknown";
@@ -83,8 +85,9 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const t = trackerState(this.carrier);
     const actor = fromUuidSync(this.carrier);
     const power = actor?.testUserPermission?.(game.user, "OBSERVER") ? powerOf(actor) : null;
+    this.#level = power === null ? null : powerLevel(power);
     return {
-      power: power === null ? null : {value: power, cells: Array.from({length: Math.max(5, power)}, (_, i) => i < power)},
+      power: power === null ? null : {value: power, level: powerLevel(power), atMax: power >= MAX_POWER, cells: Array.from({length: MAX_POWER}, (_, i) => i < power)},
       powerResult: this.#powerResult,
       powerDisabled: !t || t.locked,
       isGM: game.user.isGM,
@@ -139,7 +142,7 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static #onRecharge() {
-    if (game.user.isGM) setPower(fromUuidSync(this.carrier), 5);
+    if (game.user.isGM) setPower(fromUuidSync(this.carrier), MAX_POWER);
   }
 
   static #onLock() {
@@ -256,12 +259,13 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const p = (now - this.#sweepStart) / this.#sweepMs;
     if (p >= 0 && p <= 1) {
       ctx.lineWidth = 2;
-      ctx.strokeStyle = "rgba(255, 200, 60, 0.8)";
+      ctx.strokeStyle = `rgba(${LEVEL_RGB[this.#level] ?? "255, 200, 60"}, 0.8)`;
       ctx.beginPath();
       ctx.arc(CENTER, CENTER, p * RADIUS, 0, Math.PI * 2);
       ctx.stroke();
     }
 
+    const rgb = LEVEL_RGB[this.#level] ?? LEVEL_RGB.green;
     ctx.font = "14px monospace";
     for (const b of this.#blips) {
       const age = now - b.at;
@@ -271,14 +275,14 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
       const x = CENTER + Math.cos(b.b) * r; // map y grows downward, so north stays up
       const y = CENTER + Math.sin(b.b) * r;
       const g = ctx.createRadialGradient(x, y, 0, x, y, 12);
-      g.addColorStop(0, `rgba(160, 255, 170, ${a})`);
-      g.addColorStop(1, "rgba(125, 255, 138, 0)");
+      g.addColorStop(0, `rgba(${rgb}, ${a})`);
+      g.addColorStop(1, `rgba(${rgb}, 0)`);
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.arc(x, y, 12, 0, Math.PI * 2);
       ctx.fill();
       if (b.elev) {
-        ctx.fillStyle = `rgba(125, 255, 138, ${a})`;
+        ctx.fillStyle = `rgba(${rgb}, ${a})`;
         ctx.fillText(b.elev > 0 ? "▲" : "▼", x + 8, y - 8);
       }
     }
