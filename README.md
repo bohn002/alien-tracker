@@ -5,12 +5,12 @@ A motion tracker for the **Alien RPG** on [Foundry VTT](https://foundryvtt.com) 
 The GM's client works out what is moving, including hidden tokens, and sends the players only a range, a bearing and a band. Players never receive token names, positions or ids, so nothing leaks.
 
 <p>
-  <img src="docs/images/player-view.png" alt="Player view: three blips, one marked with an up arrow for a different floor" width="282">
+  <img src="docs/images/player-view.png" alt="The scanner screen mid-scan: three blips, each marked with a down arrow for a lower floor" width="282">
   &nbsp;
-  <img src="docs/images/gm-view.png" alt="GM view: the same screen plus lock, continuous and Show to controls" width="282">
+  <img src="docs/images/gm-view.png" alt="The GM window: screen, battery and Power check, lock, continuous, phantom and Show to controls" width="282">
 </p>
 
-*Left: what a player sees mid-scan. Right: the GM's version of the window, with lock, continuous and "Show to" controls. The ▲ marks a contact on a higher floor.*
+*Left: the scanner screen mid-scan (Movie CRT look). Right: the GM's window with battery, Power check, lock, continuous, phantom and "Show to" controls. The ▼ marks a contact on a lower floor.*
 
 ## What it does
 

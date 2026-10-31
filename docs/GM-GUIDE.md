@@ -50,6 +50,8 @@ Turn on **Allow directional scans**. The SCAN button splits in two:
 - **SCAN 360**: all around, normal range.
 - **SCAN ARC**: only the cone the token is facing (width and extra range are settings), and the cone is drawn on the screen.
 
+![An arc scan on the screen](images/arc-scan.png)
+
 Rotate the token on the map to aim it. Tokens facing south have rotation 0.
 
 ## 6. Phantom contacts
