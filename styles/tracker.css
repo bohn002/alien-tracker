@@ -30,3 +30,4 @@
 .hope-motion-tracker .mt-power.level-red .mt-battery i.full,
 .hope-motion-tracker .mt-power.level-red .mt-battery-label { animation: mt-pulse 0.9s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .hope-motion-tracker .mt-power.level-red * { animation: none !important; } }
+.hope-motion-tracker .mt-controls button.mt-scan { flex-basis: 100%; min-height: 3.6em; font-size: 1.1em; }
