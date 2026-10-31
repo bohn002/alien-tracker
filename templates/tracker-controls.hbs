@@ -6,14 +6,14 @@
       <span class="mt-battery-label">POWER {{power.value}}</span>
       {{#each power.cells}}<i class="{{#if this}}full{{/if}}"></i>{{/each}}
     </div>
-    <button type="button" data-action="power" {{#if powerDisabled}}disabled{{/if}} {{#unless power.value}}disabled{{/unless}}>POWER CHECK</button>
+    <button type="button" data-action="power" {{#if powerDisabled}}disabled{{/if}} {{#unless power.value}}disabled{{/unless}}><i class="fa-solid fa-dice" inert></i> POWER CHECK</button>
   </div>
   {{/if}}
   {{#if power}}{{#if isGM}}
   <div class="mt-power mt-power-gm">
     <span class="mt-battery-label">GM POWER</span>
-    <button type="button" data-action="powerDown" {{#unless power.value}}disabled{{/unless}}>−1</button>
-    <button type="button" data-action="powerUp" {{#if power.atMax}}disabled{{/if}}>+1</button>
+    <button type="button" data-action="powerDown" {{#unless power.value}}disabled{{/unless}}>−</button>
+    <button type="button" data-action="powerUp" {{#if power.atMax}}disabled{{/if}}>+</button>
     <button type="button" data-action="recharge" {{#if power.atMax}}disabled{{/if}}>RECHARGE</button>
   </div>
   {{/if}}{{/if}}
@@ -24,8 +24,8 @@
   </div>
   {{/if}}
   {{#if isGM}}
-  <button type="button" data-action="lock" class="{{#if locked}}on{{/if}}">{{#if locked}}LOCKED{{else}}UNLOCKED{{/if}}</button>
-  <button type="button" data-action="continuous" class="{{#if continuous}}on{{/if}}">CONTINUOUS</button>
+  <button type="button" data-action="lock" class="{{#if locked}}on{{/if}}">{{#if locked}}<i class="fa-solid fa-lock" inert></i> LOCKED{{else}}<i class="fa-solid fa-lock-open" inert></i> UNLOCKED{{/if}}</button>
+  <button type="button" data-action="continuous" class="{{#if continuous}}on{{/if}}"><i class="fa-solid fa-rotate" inert></i> CONTINUOUS</button>
   <fieldset class="mt-viewers">
     <legend>Show to</legend>
     {{#each users}}
