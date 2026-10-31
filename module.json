@@ -2,7 +2,7 @@
   "id": "hope-motion-tracker",
   "title": "Alien Motion Tracker",
   "description": "An M314 motion tracker for the Alien RPG. The GM's client detects tokens that are moving, hidden ones included, and players see only range, bearing and band on a scanner screen.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "compatibility": {
     "minimum": "13",
     "verified": "14"
