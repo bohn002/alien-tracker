@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="system-ui, sans-serif" font-size="14">
+  <rect width="640" height="300" fill="#10140f"/>
+  <rect x="20" y="20" width="360" height="260" fill="#1b211a" stroke="#4a5a46"/>
+  <text x="30" y="42" fill="#8fa88a">Scene (top-down map)</text>
+  <rect x="220" y="90" width="130" height="150" fill="#ff4a3a" fill-opacity="0.18" stroke="#ff4a3a" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="228" y="112" fill="#ff8a7a" font-weight="bold">Region: MT Jam</text>
+  <circle cx="90" cy="200" r="9" fill="#7dff8a"/><text x="62" y="228" fill="#7dff8a">Tracker</text>
+  <circle cx="285" cy="180" r="8" fill="#ffd23a"/><text x="238" y="210" fill="#ffd23a">Drone (inside)</text>
+  <circle cx="160" cy="110" r="8" fill="#ffd23a"/><text x="124" y="95" fill="#ffd23a">Drone (outside)</text>
+  <g font-size="13" fill="#d8e4d4">
+    <text x="410" y="52" font-weight="bold" font-size="15">How to make one</text>
+    <text x="410" y="82">1. Scene controls → Regions tool.</text>
+    <text x="410" y="106">2. Draw a rectangle over the area.</text>
+    <text x="410" y="130">3. Name the region  MT Jam  (anything after</text>
+    <text x="410" y="148">   it is fine: "MT Jam reactor").</text>
+    <text x="410" y="172">4. Turn on "Jamming zones" in settings.</text>
+    <text x="410" y="204" fill="#ff8a7a">Inside the zone, contacts read wrong:</text>
+    <text x="410" y="222" fill="#ff8a7a">distance and bearing wobble every scan.</text>
+    <text x="410" y="246" fill="#ff8a7a">A tracker inside it gets screen static.</text>
+  </g>
+</svg>

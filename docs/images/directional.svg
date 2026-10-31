@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260" font-family="system-ui, sans-serif" font-size="14">
+  <rect width="640" height="260" fill="#10140f"/>
+  <circle cx="150" cy="130" r="95" fill="#0e3a16" stroke="#4a5a46"/>
+  <circle cx="150" cy="130" r="95" fill="none" stroke="#7dff8a" stroke-opacity="0.3" stroke-dasharray="5 6"/>
+  <path d="M150 130 L 217 63 A 95 95 0 0 1 217 197 Z" fill="#7dff8a" fill-opacity="0.12" stroke="#7dff8a" stroke-width="2"/>
+  <circle cx="150" cy="130" r="5" fill="#7dff8a"/>
+  <text x="108" y="238" fill="#8fa88a">Token faces right →</text>
+  <circle cx="195" cy="118" r="7" fill="#ffd23a"/><circle cx="85" cy="160" r="7" fill="#555"/>
+  <g font-size="13" fill="#d8e4d4">
+    <text x="300" y="50" font-weight="bold" font-size="15">360 vs arc</text>
+    <text x="300" y="78"><tspan fill="#7dff8a" font-weight="bold">SCAN 360</tspan>: looks all around, normal range.</text>
+    <text x="300" y="104"><tspan fill="#7dff8a" font-weight="bold">SCAN ARC</tspan>: looks only in the cone the token</text>
+    <text x="300" y="122">faces (90° by default), but reaches 1.5× farther.</text>
+    <text x="300" y="152">The cone stays drawn on the screen so everyone</text>
+    <text x="300" y="170">can see the last scan was not 360°. Contacts</text>
+    <text x="300" y="188">behind you (grey) are missed. Turn the token</text>
+    <text x="300" y="206">to aim it.</text>
+  </g>
+</svg>

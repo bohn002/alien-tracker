@@ -47,7 +47,7 @@ const MAX_CONTACTS = 20;
 const lastMoved = new Map(); // tokenId -> ms
 const bursts = new Map(); // carrier uuid -> {left, glitch, timer}
 const pending = new Set(); // carriers awaiting a power roll
-const phantoms = new Map(); // carrier uuid -> [{d, b, left, until}] fake contacts the GM placed
+const phantoms = new Map(); // carrier uuid -> [{f (fraction of range), b, left, until}] fake contacts the GM placed
 let deliverLocal = () => {};
 
 const setting = (key) => game.settings.get(MODULE_ID, key);
@@ -140,13 +140,14 @@ function sweep(carrierUuid, glitch, mode = "omni") {
   const fakes = (phantoms.get(carrierUuid) ?? []).filter((p) => p.left > 0 && p.until > now);
   for (const p of fakes) {
     p.left--;
-    if (p.d <= range && (!dir || inArc(p.b, facing, arc))) found.push({d: p.d, b: p.b, elev: 0, band: band(p.d, bands)});
+    const d = p.f * range; // placed as a fraction of the screen so it sits where the GM clicked whatever the range
+    if (!dir || inArc(p.b, facing, arc)) found.push({d, b: p.b, elev: 0, band: band(d, bands)});
   }
   phantoms.set(carrierUuid, fakes.filter((p) => p.left > 0));
   found.sort((a, b) => a.d - b.d);
   const jit = setting("jitter");
   const contacts = found.slice(0, MAX_CONTACTS).map(({d, b, band, elev, n}) => ({d: jit ? jitter(d) : d, b, band, elev, ...(n ? {n} : {})}));
-  send({type: "contacts", carrier: carrierUuid, units: scene.grid.units, glitch: glitch || carrierJammed, contacts, range, facing, arc});
+  send({type: "contacts", carrier: carrierUuid, units: scene.grid.units, glitch: glitch || carrierJammed, contacts, range, facing, arc: arc && {facing, width: arc}});
   return true;
 }
 
@@ -214,20 +215,20 @@ export function handleSocket(data, senderId) {
   // shortcut: a player could spoof another viewer's id; fine for a trusted table.
   if (!isActiveGM()) return;
   if (data?.type === "scan") handleScan(data.carrier, data.userId, data.mode);
-  else if (data?.type === "phantom" && game.users.get(data.userId)?.isGM) addPhantom(data.carrier, data.d, data.b);
+  else if (data?.type === "phantom" && game.users.get(data.userId)?.isGM) addPhantom(data.carrier, data.f, data.b);
   else if (data?.type === "powerRoll") handlePowerRoll(data.carrier, data.userId);
 }
 
 // GM only: a fake contact that shows in the next sweeps (about 2 minutes to be used, 2 sweeps once it appears).
-function addPhantom(carrier, d, b) {
-  if (!trackers()[carrier] || !Number.isFinite(d) || !Number.isFinite(b)) return;
-  phantoms.set(carrier, [...(phantoms.get(carrier) ?? []), {d, b, left: 2, until: Date.now() + 120000}]);
+function addPhantom(carrier, f, b) {
+  if (!trackers()[carrier] || !Number.isFinite(f) || !Number.isFinite(b)) return;
+  phantoms.set(carrier, [...(phantoms.get(carrier) ?? []), {f: Math.min(1, Math.max(0, f)), b, left: 2, until: Date.now() + 120000}]);
 }
 
-export function requestPhantom(carrier, d, b) {
+export function requestPhantom(carrier, f, b) {
   if (!game.user.isGM) return;
-  if (isActiveGM()) addPhantom(carrier, d, b);
-  else game.socket.emit(CHANNEL, {type: "phantom", carrier, userId: game.userId, d, b});
+  if (isActiveGM()) addPhantom(carrier, f, b);
+  else game.socket.emit(CHANNEL, {type: "phantom", carrier, userId: game.userId, f, b});
 }
 
 export function requestPowerRoll(carrier) {

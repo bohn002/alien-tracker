@@ -198,8 +198,7 @@ export class TrackerApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const rect = ev.currentTarget.getBoundingClientRect();
     const x = ((ev.clientX - rect.left) / rect.width) * SIZE - CENTER;
     const y = ((ev.clientY - rect.top) / rect.height) * SIZE - CENTER;
-    const range = this.#range ?? setting("range");
-    requestPhantom(this.carrier, Math.min(1, Math.hypot(x, y) / RADIUS) * range, Math.atan2(y, x));
+    requestPhantom(this.carrier, Math.min(1, Math.hypot(x, y) / RADIUS), Math.atan2(y, x));
     this.#phantomMode = false;
     ui.notifications.info("Phantom contact placed: it shows on the next scans.");
     this.render({parts: ["controls"]});

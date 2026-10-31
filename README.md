@@ -26,6 +26,17 @@ The GM's client works out what is moving, including hidden tokens, and sends the
 - **Battery and Power checks.** The tracker shows its Power as battery cells and has a **POWER CHECK** button: it rolls dice equal to the current Power, each 1 drains 1 Power, and a panel (plus a chat card) explains the result in plain words. At 0 Power the tracker goes dark and refuses scans until the GM recharges it. The GM gets **-1 / +1 / Recharge** buttons on the window.
 - **Follows the character.** A tracker belongs to a character, so it keeps working on whichever scene their token is in.
 
+## More for the GM
+
+Switched on in settings, off by default. Each one is walked through with pictures in the **[GM guide](docs/GM-GUIDE.md)**:
+
+- **Directional scans** (SCAN 360 / SCAN ARC) with a visible cone on the screen.
+- **Phantom contacts**: click the screen to place a fake blip.
+- **Jamming zones**: name a region `MT Jam` and readings inside it go wrong.
+- **Swarms**: tokens share a name, read as one blip far away and split when they close in.
+- **Private sound**: only you and the players under Show to hear or see the tracker. Optional direction panning.
+- **Looks**: a Movie CRT skin (default) or the Classic one, with trails and subtle idle glitches.
+
 ## Install
 
 In Foundry: **Add-on Modules → Install Module**, and paste this manifest URL:
@@ -52,11 +63,12 @@ Players get their own window automatically when they are made a viewer, and the 
 
 | Control | Who | What it does |
 |---|---|---|
-| **SCAN** | players, GM | Runs one burst of sweeps (3 by default), then the screen pulses on STANDBY. Disabled while locked or mid-scan. |
+| **SCAN** (or **SCAN 360** / **SCAN ARC**) | players, GM | Runs one burst of sweeps (3 by default), then the screen pulses on STANDBY. Disabled while locked or mid-scan. |
 | **POWER n** and the battery cells | everyone who can see the character | Current charge. Green at 4–5, yellow at 2–3, red and pulsing at 1, grey at 0. |
 | **POWER CHECK** | players, GM | Rolls dice equal to the current Power. Each 1 drains 1 Power. A panel and a chat card explain the result. |
 | **− / + / RECHARGE** | GM only | Set the Power by hand. + and Recharge are disabled when full, − when empty. |
 | **LOCKED / UNLOCKED** | GM only | A locked tracker shows OFFLINE and refuses scans and Power checks. |
+| **PHANTOM** | GM only | Then click the screen to place a fake contact. |
 | **CONTINUOUS** | GM only | The tracker sweeps on its own until you switch it off, for scripted moments. |
 | **Show to** | GM only | Which players get this tracker. |
 
@@ -90,10 +102,18 @@ All under **Configure Settings → Alien Motion Tracker**. Defaults in brackets.
 | Detect player characters (on) | Moving PCs ping too |
 | Floor height (3m) | Added between `MT Level` floors |
 | Readout jitter (on) | ±1m on the readout |
+| Allow directional scans (off) | Adds SCAN ARC beside SCAN 360 |
+| Directional cone width (90°) / range multiplier (1.5×) | How the arc scan looks and how far it reaches |
+| Jamming zones (off) | Regions named `MT Jam` scramble readings |
+| Swarm splitting (off) | Token HUD swarm names group tokens into one blip at range |
 | Battery size (5) | Maximum Power charges. Recharge fills to this |
 | Roll for power (off) | Each SCAN first makes a Power check automatically |
 | Sound files | Sweep, close, medium and far sounds |
 | Scanner volume (per player, 0.8) | Each player's own volume |
+| Scanner look (per player, Movie CRT) | Movie CRT or Classic |
+| Phosphor trails (per player, on) | Past blips linger as faint dots |
+| Idle screen glitches (per player, on) | Subtle static and flicker when idle |
+| Pan sounds by direction (per player, off) | Stereo pan and muffle by bearing |
 
 ## How it works
 

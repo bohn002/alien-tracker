@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="system-ui, sans-serif" font-size="14">
+  <rect width="640" height="300" fill="#10140f"/>
+  <g>
+    <rect x="20" y="20" width="290" height="190" rx="10" fill="#0e3a16" stroke="#4a5a46"/>
+    <circle cx="165" cy="115" r="60" fill="none" stroke="#7dff8a" stroke-opacity="0.4" stroke-dasharray="5 6"/>
+    <circle cx="165" cy="115" r="3" fill="#7dff8a"/>
+    <circle cx="240" cy="70" r="14" fill="#7dff8a" fill-opacity="0.6"/><text x="258" y="76" fill="#9dff9d">x3</text>
+    <text x="30" y="232" fill="#d8e4d4" font-weight="bold">Far away: one blip</text>
+    <text x="30" y="252" fill="#8fa88a">Beyond the medium band the swarm</text>
+    <text x="30" y="270" fill="#8fa88a">is a single blip marked with a count.</text>
+  </g>
+  <g>
+    <rect x="330" y="20" width="290" height="190" rx="10" fill="#0e3a16" stroke="#4a5a46"/>
+    <circle cx="475" cy="115" r="60" fill="none" stroke="#7dff8a" stroke-opacity="0.4" stroke-dasharray="5 6"/>
+    <circle cx="475" cy="115" r="3" fill="#7dff8a"/>
+    <circle cx="505" cy="85" r="8" fill="#7dff8a" fill-opacity="0.8"/>
+    <circle cx="440" cy="75" r="8" fill="#7dff8a" fill-opacity="0.8"/>
+    <circle cx="525" cy="130" r="8" fill="#7dff8a" fill-opacity="0.8"/>
+    <text x="340" y="232" fill="#d8e4d4" font-weight="bold">Close in: it splits</text>
+    <text x="340" y="252" fill="#8fa88a">Inside the medium band every member</text>
+    <text x="340" y="270" fill="#8fa88a">shows on its own: "they're all around us".</text>
+  </g>
+</svg>
